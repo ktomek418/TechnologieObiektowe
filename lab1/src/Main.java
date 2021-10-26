@@ -12,9 +12,10 @@ public class Main {
     public static void main(String[] args) {
         IGetXMLFile xmlProvider = new GetXMLFromURL("https://www.nbp.pl/kursy/xml/lasta.xml");
         DataProvider dataProvider = new GetDataFromXML(xmlProvider);
-        CurrencyCollection.getInstance().createCollection(dataProvider);
+        CurrencyCollection collection = CurrencyCollection.getInstance();
+        collection.createCollection(dataProvider);
         Scanner scanner = new Scanner(System.in);
-        UserInterface UI = new UserInterface(scanner);
+        UserInterface UI = new UserInterface(scanner, collection);
         UI.program();
     }
 }

@@ -12,10 +12,12 @@ import java.util.Scanner;
 
 public class UserInterface {
     private final Scanner scanner;
+    private final CurrencyCollection collection;
 
-
-    public UserInterface(Scanner scanner){
+    public UserInterface(Scanner scanner, CurrencyCollection collection){
         this.scanner = scanner;
+        this.collection = collection;
+
     }
 
     public void program(){
@@ -25,14 +27,19 @@ public class UserInterface {
                 menu();
                 int command = scanner.nextInt();
                 scanner.nextLine();
-                if(command == 3 ){
+                if(command == 4 ){
                     break;
                 }
 
                 if(command == 1){
                     listAllCurrencies();
                 } else if(command == 2){
+                    listAllExchangeRates();
+                } else if(command == 3){
                     convert();
+                }
+                else{
+                    System.out.println("Feature not yet implemented!");
                 }
                 System.out.println();
             }catch(InputMismatchException e ) {
@@ -49,13 +56,20 @@ public class UserInterface {
     private void menu(){
         System.out.println("Press number: ");
         System.out.println("[1] - list all currencies");
-        System.out.println("[2] - convert currencies");
-        System.out.println("[3] - exit the program");
+        System.out.println("[2] - list all exchange rates");
+        System.out.println("[3] - convert currencies");
+        System.out.println("[4] - exit the program");
     }
 
     private void listAllCurrencies(){
-        ArrayList<ICurrency> currencies = CurrencyCollection.getInstance().getAllCurrencies();
+        ArrayList<ICurrency> currencies = collection.getAllCurrencies();
         currencies.stream().map(e -> e.getCode() + "  " + e.getName())
+                .forEach(System.out::println);
+    }
+
+    private void listAllExchangeRates(){
+        ArrayList<ICurrency> currencies = collection.getAllCurrencies();
+        currencies.stream().map(e -> e.getCode() + " - " + e.getRate())
                 .forEach(System.out::println);
     }
 
