@@ -23,7 +23,7 @@ public class Vector3DDecorator implements IVector {
     @Override
     public double cdot(IVector vector) {
         double[] paramComponents = vector.getComponents();
-        if(paramComponents.length != 3) {return srcVector.cdot(vector); }
+        if(paramComponents.length == 2) {return srcVector.cdot(vector); }
         return srcVector.cdot(vector) + z * paramComponents[2];
     }
 
@@ -31,18 +31,18 @@ public class Vector3DDecorator implements IVector {
         return srcVector;
     }
 
-    public Vector3DInheritance cross(IVector vector){
+    public Vector3DDecorator cross(IVector vector){
         double[] paramComponents = vector.getComponents();
         double[] thisComponents = getComponents();
         double newZ = thisComponents[0] * paramComponents[1] - thisComponents[1] * paramComponents[0];
         if(paramComponents.length == 3){
             double newX = thisComponents[1] * paramComponents[2] - thisComponents[2] * paramComponents[1];
             double newY = thisComponents[2] * paramComponents[0] - thisComponents[0] * paramComponents[2];
-            return new Vector3DInheritance(newX, newY, newZ);
+            return new Vector3DDecorator(new Vector2D(newX, newY), newZ);
         }
         double newX =  - thisComponents[2] * paramComponents[1];
         double newY = thisComponents[2] * paramComponents[0];
-        return new Vector3DInheritance(newX, newY , newZ);
+        return new Vector3DDecorator(new Vector2D(newX, newY), newZ);
     }
 
     @Override

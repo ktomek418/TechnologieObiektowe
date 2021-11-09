@@ -22,7 +22,7 @@ public class Vector3DInheritance extends Vector2D{
     @Override
     public double cdot(IVector vector){
         double[] paramComponents = vector.getComponents();
-        if(paramComponents.length != 3) {return super.cdot(vector); }
+        if(paramComponents.length == 2) {return super.cdot(vector); }
         return super.cdot(vector) + z * paramComponents[2];
     }
 
@@ -42,7 +42,7 @@ public class Vector3DInheritance extends Vector2D{
         }
         double newX =  - thisComponents[2] * paramComponents[1];
         double newY = thisComponents[2] * paramComponents[0];
-        return new Vector3DInheritance(newX, newY , newZ);
+        return new Vector3DInheritance(newX, newY, newZ);
     }
 
     @Override
@@ -51,34 +51,4 @@ public class Vector3DInheritance extends Vector2D{
         return "Vector3D (" + components[0] + ", " + components[1] + ", " + components[2] +")";
     }
 
-    public static void main(String[] args) {
-        Vector3DInheritance vector3d = new Vector3DInheritance(1,2, 3);
-        Vector3DInheritance vector3d_2 = new Vector3DInheritance(2,5, 3);
-        System.out.println(vector3d);
-        System.out.println(vector3d_2);
-        System.out.println(vector3d.getSrcV());
-        System.out.println(vector3d_2.getSrcV());
-        System.out.println(vector3d.abs());
-        System.out.println(vector3d_2.abs());
-        System.out.println(vector3d.cross(vector3d_2));
-        System.out.println(vector3d.cross(vector3d_2.getSrcV()));
-        System.out.println(vector3d.getComponents()[0]);
-        System.out.println(vector3d.getComponents()[1]);
-        System.out.println(vector3d.getComponents()[2]);
-        System.out.println();
-        System.out.println();
-        Vector3DDecorator vector3dd = new Vector3DDecorator(vector3d.getSrcV(), 3);
-        Vector3DDecorator vector3dd_2 = new Vector3DDecorator(vector3d_2.getSrcV(), 3);
-        System.out.println(vector3dd);
-        System.out.println(vector3dd_2);
-        System.out.println(vector3dd.getSrcV());
-        System.out.println(vector3dd_2.getSrcV());
-        System.out.println(vector3dd.abs());
-        System.out.println(vector3dd_2.abs());
-        System.out.println(vector3dd.cross(vector3dd_2));
-        System.out.println(vector3dd.cross(vector3dd_2.getSrcV()));
-        System.out.println(vector3dd.getComponents()[0]);
-        System.out.println(vector3dd.getComponents()[1]);
-        System.out.println(vector3dd.getComponents()[2]);
-    }
 }
