@@ -1,7 +1,7 @@
 public class Main {
 
     public static void main(String[] args) {
-        Vector2D vector2D = new Vector2D(3, 5);
+        Vector2D vector2D = new Vector2D(3, 10);
         Polar2DAdapter polarVector2D = new Polar2DAdapter(new Vector2D(2, 5));
         Vector3DDecorator vector3DDecorator = new Vector3DDecorator(new Vector2D(7, 4), 2);
         Vector3DDecorator vector3DDecorator2 = new Vector3DDecorator(new Vector2D(3, -4), 12);
