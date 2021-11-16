@@ -19,7 +19,7 @@ public class Mv_Path extends CommandVariation {
             IComposite des = c.findElementByPath(splitParam[1]);
             Composite.moveElement(toMove.getParent(), des, toMove);
         }catch(Exception e){
-            System.out.println("Podane sciezki są nieprawidłowe.");
+            System.out.println("Podane sciezki są nieprawidłowe lub w docelowym folderze istenieje plik o takiej nazwie.");
         }
 
     }
