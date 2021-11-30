@@ -4,24 +4,20 @@ import Vector.Vector2D;
 import person.Person;
 import simulation.Simulation;
 import states.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.text.SimpleDateFormat;
 import java.util.Scanner;
 
 public class Memento {
-    public static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
     private final String source;
 
     public Memento(Simulation simulation){
-        source = now().replace(" ", "-").replace(":", "-") + ".txt";
-        File tempDirectory = new File("Saves");
-        File file = new File("Saves/" + source);
+        source = FileNamesProvider.now().replace(" ", "-").replace(":", "-") + ".txt";
+        File tempDirectory = new File("SnapShots");
+        File file = new File("SnapShots/" + source);
         tempDirectory.mkdir();
         try {
             file.createNewFile();
@@ -40,7 +36,7 @@ public class Memento {
     }
 
     public Simulation getState(){
-        File file = new File("Saves/" + source);
+        File file = new File("SnapShots/" + source);
         ArrayList<Person> persons = new ArrayList<>();
         Simulation simulation = new Simulation();
         try {
@@ -71,12 +67,6 @@ public class Memento {
         if(name.equals( "Resist")) return new Resist();
         if(name.equals( "SickWithoutSymptoms")) return new SickWithoutSymptoms();
         else return new SickWithSymptoms();
-    }
-
-    private static String now() {
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
-        return sdf.format(cal.getTime());
     }
 
     public String toString(){

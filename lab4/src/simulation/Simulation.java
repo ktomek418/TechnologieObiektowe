@@ -17,40 +17,38 @@ import java.util.Random;
 public class Simulation extends JPanel implements ActionListener {
 
     public static final int FPS = 25;
-    public static final int maxX = 1200;
-    public static final int maxY = 650;
-    public static final int maxPopulation = 150;
-    public static final int METER = 30;
+    public static final int FRAME_WIDTH = 1200;
+    public static final int FRAME_HEIGHT = 650;
+    public static final int MAX_POPULATION = 150;
+    public static final int METER = 25;
 
+    private ArrayList<Person> population;
 
-    private ArrayList<Person> persons;
-    private Timer stepTimer;
-    private Timer newMovement;
-    private Timer newPerson;
+    private Timer nextSimulationStepTimer;
+    private Timer newMovementTimer;
+    private Timer newPersonOnTheBorderTimer;
     private final int simulationWidth;
     private final int simulationHeight;
     private final int startingPopulation;
 
     public Simulation(){
 
-        this.simulationWidth = maxX;
-        this.simulationHeight = maxY;
-        this.startingPopulation = maxPopulation;
-        this.setBackground(Color.getColor("0xEEEEEE"));
-        this.setBorder(BorderFactory.createLineBorder(Color.lightGray, 5));
-        this.setPreferredSize(new Dimension(simulationWidth, this.simulationHeight));
+        this.simulationWidth = FRAME_WIDTH;
+        this.simulationHeight = FRAME_HEIGHT;
+        this.startingPopulation = MAX_POPULATION;
+        this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 5));
+        this.setPreferredSize(new Dimension(this.simulationWidth, this.simulationHeight));
         this.setTimers();
     }
 
     public Simulation(int simulationWidth, int simulationHeight, int population){
-        if(simulationWidth * METER > maxX || simulationWidth < 5) this.simulationWidth = maxX;
+        if(simulationWidth * METER > FRAME_WIDTH || simulationWidth < 5) this.simulationWidth = FRAME_WIDTH;
         else this.simulationWidth = simulationWidth * METER;
-        if(simulationHeight * METER > maxY || simulationHeight < 5) this.simulationHeight = maxY;
+        if(simulationHeight * METER > FRAME_HEIGHT || simulationHeight < 5) this.simulationHeight = FRAME_HEIGHT;
         else this.simulationHeight = simulationHeight * METER;
-        if(population > maxPopulation || population < 0) this.startingPopulation = maxPopulation;
+        if(population > MAX_POPULATION || population < 0) this.startingPopulation = MAX_POPULATION;
         else this.startingPopulation = population;
-        this.setBackground(Color.getColor("0xEEEEEE"));
-        this.setBorder(BorderFactory.createLineBorder(Color.lightGray, 5));
+        this.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY, 5));
         this.setPreferredSize(new Dimension(this.simulationWidth, this.simulationHeight));
         this.setTimers();
     }
@@ -68,17 +66,17 @@ public class Simulation extends JPanel implements ActionListener {
     }
 
     private void  setTimers(){
-        stepTimer = new Timer(1000/FPS, this);
-        newMovement = new Timer(500, e ->{for(Person person: persons) person.generateMovement();});
-        newPerson = new Timer(280, e-> {
-            if(!(persons.size() > startingPopulation + 3))
-                persons.add(newPersonOnTheBorder());
+        nextSimulationStepTimer = new Timer(1000/FPS, this);
+        newMovementTimer = new Timer(500, e ->{for(Person person: population) person.generateMovement();});
+        newPersonOnTheBorderTimer = new Timer(280, e-> {
+            if(!(population.size() > startingPopulation + 3))
+                population.add(newPersonOnTheBorder());
         });
     }
 
 
     public void add(ArrayList<Person> persons){
-        this.persons = persons;
+        this.population = persons;
         repaint();
     }
 
@@ -89,30 +87,6 @@ public class Simulation extends JPanel implements ActionListener {
         for(int i=0; i<population; i++){
             persons.add(new Person(new Healthy(), random.nextInt(simulation.getSimulationWidth()),
                     random.nextInt(simulation.getSimulationHeight())));
-        }
-        simulation.add(persons);
-        return simulation;
-    }
-
-    public static Simulation createSimulationWithoutResistance(){
-        Simulation simulation = new Simulation();
-        ArrayList<Person> persons = new ArrayList<>();
-        Random random = new Random();
-        for(int i=0; i<maxPopulation; i++){
-            persons.add(new Person(new Healthy(), random.nextInt(maxX), random.nextInt(maxY)));
-        }
-        simulation.add(persons);
-        return simulation;
-    }
-
-    public static Simulation createSimulationWithResistance(){
-        Simulation simulation = new Simulation();
-        ArrayList<Person> persons = new ArrayList<>();
-        Random random = new Random();
-        for(int i=0; i<maxPopulation; i++){
-            if(random.nextDouble() < 0.15)
-                persons.add(new Person(new Resist(), random.nextInt(maxX), random.nextInt(maxY)));
-            else persons.add(new Person(new Healthy(), random.nextInt(maxX), random.nextInt(maxY)));
         }
         simulation.add(persons);
         return simulation;
@@ -136,7 +110,7 @@ public class Simulation extends JPanel implements ActionListener {
     public void paint(Graphics g){
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
-        for (Person person : persons) {
+        for (Person person : population) {
             g2d.setPaint(person.getColor());
             double[] position = person.getPosition().getComponents();
             g2d.fillOval((int) position[0], (int) position[1], 13, 13);
@@ -145,7 +119,7 @@ public class Simulation extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        for(Person person: persons) {
+        for(Person person: population) {
             person.move();
         }
         checkDistanceBetweenPeople();
@@ -153,38 +127,8 @@ public class Simulation extends JPanel implements ActionListener {
         repaint();
     }
 
-    private void checkDistanceBetweenPeople(){
-        for(Person person: persons) {
-            boolean nearSickPersonWithSymptoms = false;
-            boolean nearSickPersonWithoutSymptoms = false;
-
-            if(person.getColor() == Color.blue) continue;
-
-            if(person.getColor() == Color.red || person.getColor() == Color.black){
-                person.nextStepResist();
-            } else{
-                for(Person person1: persons){
-                    if(person1.getColor() == Color.red){
-                        if(person.getDistance(person1.getPosition()) <= 2* METER){
-                            person.nextStepSickFromPersonWithSymptoms();
-                            nearSickPersonWithSymptoms = true;
-                        }
-                    }
-                    if (person1.getColor() == Color.black){
-                        if(person.getDistance(person1.getPosition()) <= 2* METER){
-                            person.nextStepSickFromPersonWithoutSymptoms();
-                            nearSickPersonWithoutSymptoms = true;
-                        }
-                    }
-                }
-            }
-            if(!nearSickPersonWithSymptoms) person.resetTimeToGetSickFromPersonWithSymptoms();
-            if(!nearSickPersonWithoutSymptoms) person.resetTimeToGetSickFromPersonWithoutSymptoms();
-        }
-    }
-
     private void checkBorders(){
-        for (Iterator<Person> it = persons.iterator(); it.hasNext();) {
+        for (Iterator<Person> it = population.iterator(); it.hasNext();) {
             Person next = it.next();
             if (onTheBorder(next)){
                 if(new Random().nextDouble() <= 0.5) it.remove();
@@ -223,36 +167,36 @@ public class Simulation extends JPanel implements ActionListener {
         double[] comp = person.getPosition().getComponents();
         return comp[0] <= 0 || comp[0] >= this.simulationWidth - 10 || comp[1] <= 0 || comp[1] >= simulationHeight - 10;
     }
+
+    public boolean isOn(){
+        return nextSimulationStepTimer.isRunning();
+    }
     public void startSimulation(){
-        stepTimer.start();
-        newMovement.start();
-        newPerson.start();
+        nextSimulationStepTimer.start();
+        newMovementTimer.start();
+        newPersonOnTheBorderTimer.start();
 
     }
     public void stopSimulation(){
-        stepTimer.stop();
-        newMovement.stop();
-        newPerson.stop();
-    }
-
-    public boolean isOn(){
-        return stepTimer.isRunning();
+        nextSimulationStepTimer.stop();
+        newMovementTimer.stop();
+        newPersonOnTheBorderTimer.stop();
     }
 
     public void saveToFile(PrintWriter writer){
         writer.println(simulationWidth / METER + "," + simulationHeight / METER + "," + startingPopulation);
-        for(Person person: persons){
+        for(Person person: population){
             StringBuilder builder = new StringBuilder();
-            double[] postition = person.getPosition().getComponents();
+            double[] position = person.getPosition().getComponents();
             double[] movement = person.getMovement().getComponents();
             int timeWithSymptoms = person.getTimeToGetSickFromPersonWithSymptoms();
             int timeWithoutSymptoms = person.getTimeToGetSickFromPersonWithoutSymptoms();
             int timeToResist = person.getTimeToResistance();
             builder.append(person.getState().getName());
             builder.append(",");
-            builder.append(postition[0]);
+            builder.append(position[0]);
             builder.append(",");
-            builder.append(postition[1]);
+            builder.append(position[1]);
             builder.append(",");
             builder.append(movement[0]);
             builder.append(",");
@@ -266,5 +210,35 @@ public class Simulation extends JPanel implements ActionListener {
             writer.println(builder);
         }
         writer.close();
+    }
+
+    private void checkDistanceBetweenPeople(){
+        for(Person person: population) {
+            boolean nearSickPersonWithSymptoms = false;
+            boolean nearSickPersonWithoutSymptoms = false;
+
+            if(person.getColor() == Color.blue) continue;
+
+            if(person.getColor() == Color.red || person.getColor() == Color.black){
+                person.nextStepResist();
+            } else{
+                for(Person person1: population){
+                    if(person1.getColor() == Color.red){
+                        if(person.getDistance(person1.getPosition()) <= 2* METER){
+                            person.nextStepSickFromPersonWithSymptoms();
+                            nearSickPersonWithSymptoms = true;
+                        }
+                    }
+                    if (person1.getColor() == Color.black){
+                        if(person.getDistance(person1.getPosition()) <= 2* METER){
+                            person.nextStepSickFromPersonWithoutSymptoms();
+                            nearSickPersonWithoutSymptoms = true;
+                        }
+                    }
+                }
+            }
+            if(!nearSickPersonWithSymptoms) person.resetTimeToGetSickFromPersonWithSymptoms();
+            if(!nearSickPersonWithoutSymptoms) person.resetTimeToGetSickFromPersonWithoutSymptoms();
+        }
     }
 }

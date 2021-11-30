@@ -10,12 +10,13 @@ import java.util.Random;
 
 public class Person {
 
+    private static final Random random = new Random();
+
     private IState state;
     private final IVector position;
     private IVector movement;
-    private static final Random random = new Random();
-    private int timeToGetSickFromPersonWithoutSymptoms = 55;
-    private int timeToGetSickFromPersonWithSymptoms = 55;
+    private int timeToGetSickFromPersonWithoutSymptoms = 75;
+    private int timeToGetSickFromPersonWithSymptoms = 75;
     private int timeToResistance = 0;
 
     public Person(IState state, double xPos, double yPos){
@@ -39,25 +40,19 @@ public class Person {
     public Color getColor(){
         return state.getColor();
     }
-
     public IVector getPosition() {
         return position;
     }
-
     public IVector getMovement() {return movement;}
-
-    public int getTimeToGetSickFromPersonWithoutSymptoms() {
-        return timeToGetSickFromPersonWithoutSymptoms;
-    }
-
-    public int getTimeToGetSickFromPersonWithSymptoms() {
-        return timeToGetSickFromPersonWithSymptoms;
-    }
-
     public IState getState() {
         return state;
     }
-
+    public int getTimeToGetSickFromPersonWithoutSymptoms() {
+        return timeToGetSickFromPersonWithoutSymptoms;
+    }
+    public int getTimeToGetSickFromPersonWithSymptoms() {
+        return timeToGetSickFromPersonWithSymptoms;
+    }
     public int getTimeToResistance() {
         return timeToResistance;
     }
@@ -80,7 +75,6 @@ public class Person {
         this.position.moveX(comp[0] / Simulation.FPS);
         this.position.moveY(comp[1]/ Simulation.FPS);
     }
-
 
     public void nextStepSickFromPersonWithSymptoms(){
         this.timeToGetSickFromPersonWithSymptoms --;
@@ -106,20 +100,15 @@ public class Person {
     }
 
     public void resetTimeToGetSickFromPersonWithSymptoms(){
-        this.timeToGetSickFromPersonWithSymptoms = 55;
+        this.timeToGetSickFromPersonWithSymptoms = 75;
     }
     public void resetTimeToGetSickFromPersonWithoutSymptoms(){
-        this.timeToGetSickFromPersonWithoutSymptoms = 55;
-    }
-
-    private boolean getSick(){
-        return random.nextDouble() < 0.5;
+        this.timeToGetSickFromPersonWithoutSymptoms = 75;
     }
 
     public double getDistance(IVector vector){
         return position.getDistance(vector);
     }
-
 
     public void leftBorder(){
         double max = Simulation.METER * 2.5;
@@ -150,12 +139,15 @@ public class Person {
         this.movement = new Vector2D( x_movement, y_movement);
     }
 
-
     public static IState randomState(){
         double rand = random.nextDouble();
         if(rand <= 0.05) return new SickWithSymptoms();
         else if (rand <= 0.10) return new SickWithoutSymptoms();
         else return new Healthy();
+    }
+
+    private boolean getSick(){
+        return random.nextDouble() < 0.5;
     }
 
 

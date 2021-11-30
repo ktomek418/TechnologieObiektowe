@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Caretaker {
 
-    private ArrayList<Memento> mementos;
+    private final ArrayList<Memento> mementos;
 
     public Caretaker(){
         this.mementos = new ArrayList<>();
@@ -13,10 +13,12 @@ public class Caretaker {
     }
 
     private void readMementosFromFile(){
-        File[] files = new File("Saves").listFiles();
-        for (File file : files) {
-            if (file.isFile()) {
-                this.mementos.add(new Memento(file.getName()));
+        File[] files = new File("SnapShots").listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) {
+                    this.mementos.add(new Memento(file.getName()));
+                }
             }
         }
     }

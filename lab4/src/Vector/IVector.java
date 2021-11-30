@@ -8,7 +8,7 @@ public interface IVector {
     double cdot(IVector vector);
 
     void moveX(double newX);
-    void moveY(double newX);
+    void moveY(double newY);
 
     double getDistance(IVector vector);
 }

@@ -42,8 +42,7 @@ public class Window extends JFrame {
     private void setMenu(){
         menu.setPreferredSize(new Dimension(1000, 100));
         menu.setBackground(Color.GRAY);
-        menu.setLayout(new FlowLayout( FlowLayout.CENTER, 5 , 20));
-
+        menu.setLayout(new GridLayout(1,4, 10, 10));
         menu.add(comboBox);
         menu.add(loadButton);
         menu.add(saveButton);
